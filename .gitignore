@@ -1,0 +1,16 @@
+# Ignore all virtual environments in subfolders
+**/venv/
+
+# Ignore Python cache/compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore local environment/IDE files
+*.env
+.vscode/
+.idea/
+
+# Ignore macOS system files
+.DS_Store
