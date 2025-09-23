@@ -1,5 +1,4 @@
 # File for specifying files and directories to be ignored by Git
-# See https://git-scm.com/docs/gitignore for more details
 
 # Ignore all virtual environments in subfolders
 **/venv/
