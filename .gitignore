@@ -16,3 +16,6 @@ __pycache__/
 
 # Ignore macOS system files
 .DS_Store
+
+# Ignore Streamlit secrets across the monorepo
+**/.streamlit/secrets.toml
