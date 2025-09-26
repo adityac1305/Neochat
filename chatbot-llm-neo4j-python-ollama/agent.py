@@ -2,10 +2,6 @@ from llm import llm_runnable
 from graph import graph
 
 
-
-
-
-
 # Create a movie chat chain
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -56,11 +52,12 @@ from langchain import hub
 
 agent_prompt = hub.pull("hwchase17/react-chat")
 agent = create_react_agent(llm_runnable, tools, agent_prompt)
+
 agent_executor = AgentExecutor(
     agent=agent,
     tools=tools,
     verbose=True
-    )
+)
 
 chat_agent = RunnableWithMessageHistory(
     agent_executor,
