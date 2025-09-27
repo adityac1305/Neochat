@@ -41,8 +41,9 @@ retriever = neo4jvector.as_retriever()
 from langchain_core.prompts import ChatPromptTemplate
 
 instructions = (
-    "Use the given context to answer the question."
-    "If you don't know the answer, say you don't know."
+    "Use the given context to answer the question.\n"
+    "Always answer in plain text, no Thought/Action/Observation format.\n"
+    "If links are available in metadata, return them as clickable URLs.\n"
     "Context: {context}"
 )
 

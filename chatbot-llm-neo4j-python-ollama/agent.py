@@ -107,7 +107,8 @@ agent = create_react_agent(llm_runnable, tools, agent_prompt)
 agent_executor = AgentExecutor(
     agent=agent,
     tools=tools,
-    verbose=True
+    verbose=True,
+    handle_parsing_errors=True
 )
 
 chat_agent = RunnableWithMessageHistory(
