@@ -76,28 +76,7 @@ class OllamaLLM:
         text = _extract_text(out)
         return clean_for_react(text)
 
-
-    '''
-    def predict(self, prompt: str, **kwargs):
-        
-        if hasattr(prompt, "to_string"):
-            prompt = prompt.to_string()
-
-        allowed_kwargs = {k: v for k, v in kwargs.items() if k in ["temperature", "top_p", "n"]}
-        if hasattr(ollama, "generate"):
-            out = ollama.generate(self.model, prompt, **allowed_kwargs)
-        else:
-            client = ollama.Client(host=self.host) if self.host else ollama.Client()
-            out = client.generate(self.model, prompt, **allowed_kwargs)
-        # Safely extract text
-        text = _extract_text(out)
-
-        # Strip "Assistant:" if model returns it (causes React agent parsing errors)
-        if text.strip().lower().startswith("assistant:"):
-            text = text.split(":", 1)[1].strip()
-
-        return text
-    '''    
+   
 
     ### Use generate when you want extra metadata (e.g., for logging, debugging, token usage, or structured responses). ###
 
