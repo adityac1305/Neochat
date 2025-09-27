@@ -10,7 +10,7 @@ from langchain_neo4j import Neo4jVector
 neo4jvector = Neo4jVector.from_existing_index(
     embeddings,                              # (1)
     graph=graph,                             # (2)
-    index_name="moviePlots",                 # (3)
+    index_name="moviePlots384",                 # (3)
     node_label="Movie",                      # (4)
     text_node_property="plot",               # (5)
     embedding_node_property="plotEmbedding384", # (6)
