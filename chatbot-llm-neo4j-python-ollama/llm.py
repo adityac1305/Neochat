@@ -144,6 +144,9 @@ class OllamaEmbeddings:
         self.model = model
         self.host = host
 
+    def embed_query(self, text: str, **kwargs):
+        return self.embed_text(text, **kwargs)
+
     def embed_text(self, text: str, **kwargs):
         if hasattr(ollama, "embeddings"):
             out = ollama.embeddings(self.model, text, **kwargs)
