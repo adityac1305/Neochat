@@ -1,5 +1,7 @@
 import streamlit as st
 import ollama
+from langchain_core.runnables import RunnableLambda
+
 
 OLLAMA_MODEL = st.secrets["OLLAMA_MODEL"]
 OLLAMA_EMBEDDING_MODEL = st.secrets["OLLAMA_EMBEDDING_MODEL"]
@@ -29,6 +31,17 @@ def _extract_embedding(resp):
     return list(emb)
 
 
+def clean_for_react(output: str) -> str:
+    text = output.strip()
+    if text.lower().startswith("assistant:"):
+        text = text.split(":", 1)[1].strip()
+    if not any(x in text for x in ["Thought:", "Action:", "Final Answer:"]):
+        return f"Final Answer: {text}"
+    return text
+
+
+
+
 class OllamaLLM:
     def __init__(self, model: str, host: str | None = None):
         self.model = model
@@ -47,14 +60,44 @@ class OllamaLLM:
     
     '''
 
+
     def predict(self, prompt: str, **kwargs):
+        if hasattr(prompt, "to_string"):
+            prompt = prompt.to_string()
+
+        allowed_kwargs = {k: v for k, v in kwargs.items() if k in ["temperature", "top_p", "n"]}
         if hasattr(ollama, "generate"):
-            out = ollama.generate(self.model, prompt, **kwargs)
-            return _extract_text(out)
+            out = ollama.generate(self.model, prompt, **allowed_kwargs)
+            text = _extract_text(out)
+            return clean_for_react(text)
+
         client = ollama.Client(host=self.host) if self.host else ollama.Client()
-        out = client.generate(self.model, prompt, **kwargs)
-        return _extract_text(out)
-    
+        out = client.generate(self.model, prompt, **allowed_kwargs)
+        text = _extract_text(out)
+        return clean_for_react(text)
+
+
+    '''
+    def predict(self, prompt: str, **kwargs):
+        
+        if hasattr(prompt, "to_string"):
+            prompt = prompt.to_string()
+
+        allowed_kwargs = {k: v for k, v in kwargs.items() if k in ["temperature", "top_p", "n"]}
+        if hasattr(ollama, "generate"):
+            out = ollama.generate(self.model, prompt, **allowed_kwargs)
+        else:
+            client = ollama.Client(host=self.host) if self.host else ollama.Client()
+            out = client.generate(self.model, prompt, **allowed_kwargs)
+        # Safely extract text
+        text = _extract_text(out)
+
+        # Strip "Assistant:" if model returns it (causes React agent parsing errors)
+        if text.strip().lower().startswith("assistant:"):
+            text = text.split(":", 1)[1].strip()
+
+        return text
+    '''    
 
     ### Use generate when you want extra metadata (e.g., for logging, debugging, token usage, or structured responses). ###
 
@@ -144,8 +187,9 @@ class OllamaEmbeddings:
 
 llm = OllamaLLM(OLLAMA_MODEL, host=OLLAMA_HOST)
 embeddings = OllamaEmbeddings(OLLAMA_EMBEDDING_MODEL, host=OLLAMA_HOST)
+llm_runnable = RunnableLambda(lambda prompt, **kwargs: llm.predict(prompt, **kwargs))
 
-__all__ = ["llm", "embeddings"]
+__all__ = ["llm_runnable", "embeddings", "llm"]
 
 
 
