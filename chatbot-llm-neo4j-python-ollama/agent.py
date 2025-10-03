@@ -1,5 +1,6 @@
 from llm import llm_runnable
 from graph import graph
+from tools.vector import get_movie_plot
 
 
 # Create a movie chat chain
@@ -26,6 +27,12 @@ tools = [
         name="General Chat",
         description="For general movie chat not covered by other tools",
         func=movie_chat.invoke,
+    ),
+
+    Tool.from_function(
+        name="Movie Plot Search",  
+        description="For when you need to find information about movies based on a plot",
+        func=get_movie_plot, 
     )
 ]
 
@@ -100,7 +107,8 @@ agent = create_react_agent(llm_runnable, tools, agent_prompt)
 agent_executor = AgentExecutor(
     agent=agent,
     tools=tools,
-    verbose=True
+    verbose=True,
+    handle_parsing_errors=True
 )
 
 chat_agent = RunnableWithMessageHistory(
